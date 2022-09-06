@@ -20,7 +20,7 @@ typedef struct SnakeCell {
 
 
 typedef struct Snake {
-    int just_ate;
+    Direction ate_dir;
     struct SnakeCell *head, *tail;
     int lenght;
 } Snake;
@@ -43,15 +43,13 @@ void apple_new_pos(World *world, int *x, int *y) {
     int free_space = pow(world->size - 2, 2) - world->snake->lenght;
     int ran = rand() % free_space;
     for (int i = 1; i < world->size - 1; i++) {
-        for (int j = 1; i < world->size - 1; j++) {
+        for (int j = 1; j < world->size - 1; j++) {
             if (!body_collision(world->snake, i + world->x, j + world->y)) {
-                if (ran) {
-                    ran--;
-                } else {
+                ran--;
+                if (!ran) {
                     *x = i + world->x;
                     *y = j + world->y;
                     return;
-
                 }
             }
         }
@@ -109,12 +107,16 @@ void add_cell(Snake *shake, Direction dir) {
 Direction get_dir(int key) {
     switch (key) {
         case KEY_UP:
+        case 'k':
             return TOP;
         case KEY_DOWN:
+        case 'j':
             return BOTTOM;
         case KEY_RIGHT:
+        case 'l':
             return RIGHT;
         case KEY_LEFT:
+        case 'h':
             return LEFT;
     }
     return -1;
@@ -131,7 +133,7 @@ int wall_collision(World *world, int x, int y) {
 
 int body_collision(Snake *snake, int x, int y) {
     SnakeCell *sc = snake->head;
-    while (sc->prev != NULL) {
+    while (sc != NULL) {
         if (sc->x == x && sc->y == y) {
             return 1;
         }
@@ -150,9 +152,11 @@ int apple_collision(World *world, int x, int y) {
 void apple_collision_handler(World *world) {
     int x, y;
     apple_new_pos(world, &x, &y);
+    SnakeCell *last = world->snake->tail;
+    SnakeCell *preLast = last->next;
     world->apple->x = x;
     world->apple->y = y;
-    world->snake->just_ate = 1;
+    world->snake->ate_dir = get_dir_by_two_cells(preLast->x, preLast->y, last->x, last->y);
 }
 
 void move_shake(World *world, Snake *shake, Direction dir) {
@@ -167,9 +171,9 @@ void move_shake(World *world, Snake *shake, Direction dir) {
     int x = first->x;
     int y = first->y;
     increment_coord(&x, &y, dir);
-    /* if (wall_collision(world, x, y)) { */
-    /*     return; */
-    /* } */ 
+    if (wall_collision(world, x, y)) {
+        return;
+    } 
     if (body_collision(shake, x, y)) {
         return;
     }
@@ -198,7 +202,6 @@ void draw_snake(Snake *shake) {
         addstr("o");
         cell = cell->prev;
     }
-    refresh();
 }
 
 void draw_wall(int x, int y, int size) {
@@ -231,7 +234,7 @@ Snake *create_shake(int x, int y, int lenght) {
     cell->y = y;
     sh->head = cell;
     sh->tail = cell;
-    sh->lenght = lenght + 1;
+    sh->lenght = 1;
     for (int i = 0; i < lenght; i++) {
         add_cell(sh, LEFT);
     }
@@ -251,8 +254,8 @@ World *create_world(int x, int y, int size, Snake *snake) {
     return world;
 }
 
-const int world_size = 10;
-const int snake_size = 9;
+const int world_size = 11;
+const int snake_size = 3;
 
 
 int main() {
@@ -270,6 +273,10 @@ int main() {
     draw_world(world);
     while((key = getch()) != 'q') {
         clear();
+        if (snake->ate_dir != 0) {
+            add_cell(snake, snake->ate_dir);
+            snake->ate_dir = 0;
+        }
         move_shake(world, snake, get_dir(key));
         draw_world(world);
     }
