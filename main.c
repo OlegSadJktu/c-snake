@@ -108,15 +108,19 @@ Direction get_dir(int key) {
     switch (key) {
         case KEY_UP:
         case 'k':
+        case 'w':
             return TOP;
         case KEY_DOWN:
         case 'j':
+        case 's':
             return BOTTOM;
         case KEY_RIGHT:
         case 'l':
+        case 'd':
             return RIGHT;
         case KEY_LEFT:
         case 'h':
+        case 'a':
             return LEFT;
     }
     return -1;
