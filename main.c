@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <math.h>
 
+// Prime numbers
 typedef enum {
-    TOP=1,
-    BOTTOM,
-    LEFT,
-    RIGHT,
+    TOP=2,
+    RIGHT=3,
+    BOTTOM=5,
+    LEFT=7,
 } Direction;
 
 typedef struct SnakeCell {
@@ -41,7 +42,7 @@ int body_collision(Snake *snake, int x, int y);
 
 void apple_new_pos(World *world, int *x, int *y) {
     int free_space = pow(world->size - 2, 2) - world->snake->lenght;
-    int ran = rand() % free_space;
+    int ran = 2;// rand() % free_space;
     for (int i = 1; i < world->size - 1; i++) {
         for (int j = 1; j < world->size - 1; j++) {
             if (!body_collision(world->snake, i + world->x, j + world->y)) {
@@ -133,7 +134,7 @@ int wall_collision(World *world, int x, int y) {
 
 int body_collision(Snake *snake, int x, int y) {
     SnakeCell *sc = snake->head;
-    while (sc != NULL) {
+    while (sc->prev != NULL) {
         if (sc->x == x && sc->y == y) {
             return 1;
         }
@@ -151,11 +152,11 @@ int apple_collision(World *world, int x, int y) {
 
 void apple_collision_handler(World *world) {
     int x, y;
-    apple_new_pos(world, &x, &y);
+    /* apple_new_pos(world, &x, &y); */
     SnakeCell *last = world->snake->tail;
     SnakeCell *preLast = last->next;
-    world->apple->x = x;
-    world->apple->y = y;
+    /* world->apple->x = x; */
+    /* world->apple->y = y; */
     world->snake->ate_dir = get_dir_by_two_cells(preLast->x, preLast->y, last->x, last->y);
 }
 
@@ -174,6 +175,10 @@ void move_shake(World *world, Snake *shake, Direction dir) {
     if (wall_collision(world, x, y)) {
         return;
     } 
+    if (shake->ate_dir != 0) {
+        add_cell(shake, shake->ate_dir);
+        shake->ate_dir = 0;
+    }
     if (body_collision(shake, x, y)) {
         return;
     }
@@ -191,15 +196,64 @@ void move_shake(World *world, Snake *shake, Direction dir) {
     last->prev = first;
 };
 
+Direction get_collinear(Direction dir) {
+    switch (dir) {
+        case TOP:
+            return BOTTOM;
+        case BOTTOM:
+            return TOP;
+        case RIGHT:
+            return LEFT;
+        case LEFT:
+            return RIGHT;
+    }
+}
 
-void draw_snake(Snake *shake) {
-    SnakeCell *cell = shake->head;
+char *get_drawsymbol(int vectors) {
+    switch (vectors) {
+        case 6: 
+            return "\u2570";
+        case 15:
+            return "\u256d";
+        case 35:
+            return "\u256e";
+        case 14: 
+            return "\u256f";
+        case 10:
+            return "\u2502";
+        case 21:
+            return "\u2500";
+        default:
+            return "o";
+    }
+}
+
+void draw_cell(Direction next, Direction prev, int x, int y) {
+    /* printf("prev and next %i %i\n", prev, next); */
+    int a = next * prev;
+    char *str = get_drawsymbol(a);
+    mvaddstr(y, x, str);
+}
+
+void draw_snake(Snake *snake) {
+    SnakeCell *cell = snake->head;
     move(cell->y, cell->x);
-    addstr("a");
+    addstr("o");
     cell = cell->prev;
+    Direction prev, next;
     while(cell != NULL) {
-        move(cell->y, cell->x);
-        addstr("o");
+        /* move(cell->y, cell->x); */
+        /* addstr("o"); */
+        next = get_dir_by_two_cells(cell->x, cell->y, 
+                cell->next->x, cell->next->y);
+        printf("prev , next => %i %i   ", prev, next);
+        if (cell->prev == NULL) {
+            prev = get_collinear(next);
+        } else {
+            prev = get_dir_by_two_cells(cell->x, cell->y, 
+                    cell->prev->x, cell->prev->y);
+        }
+        draw_cell(next, prev, cell->x, cell->y);
         cell = cell->prev;
     }
 }
@@ -255,10 +309,11 @@ World *create_world(int x, int y, int size, Snake *snake) {
 }
 
 const int world_size = 11;
-const int snake_size = 3;
+const int snake_size = 2;
 
 
 int main() {
+    setlocale(LC_ALL, "");
     srand(time(NULL));
     int row, col;
     initscr();
@@ -273,10 +328,6 @@ int main() {
     draw_world(world);
     while((key = getch()) != 'q') {
         clear();
-        if (snake->ate_dir != 0) {
-            add_cell(snake, snake->ate_dir);
-            snake->ate_dir = 0;
-        }
         move_shake(world, snake, get_dir(key));
         draw_world(world);
     }
