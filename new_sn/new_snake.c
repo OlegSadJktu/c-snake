@@ -6,7 +6,7 @@ typedef struct SimpleData {
 
 } SimpleData;
 
-int main() {
+int main(int argc, char **argv) {
     DList *list = create_dlist();
     for (int i = 0; i < 10 ; i ++) {
         SimpleData *data = malloc(sizeof(SimpleData));
@@ -14,7 +14,7 @@ int main() {
         printf("%i", data->a);
         add_to_dlist(list, data, START);
     }
-            
+
     printf("\n\n");
     DLink *link = get_data_from_list(list, START);
     SimpleData *sd;
