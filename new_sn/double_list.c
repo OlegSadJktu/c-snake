@@ -18,8 +18,9 @@ void add_to_dlist(DList *list, void *data, Pos pos) {
             break;
         case END:
             tmp = list->tail;
-            newLink->next = list->tail;
-            list->tail = newLink;
+            tmp->prev = newLink;
+            newLink->next = tmp;
+            list->tail =  newLink;
             break;
     }
 }
@@ -31,17 +32,17 @@ DLink *get_data_from_list(DList *list, Pos pos) {
     return list->tail;
 }
 
-void *delete_from_list(DList *list, Pos pos) {
+void delete_from_list(DList *list, Pos pos) {
     DLink *link;
     if (list->head == NULL) {
-        return NULL;
+        return;
     }
     if (list->head == list->tail) {
         link = list->head;
         list->head = NULL;
         list->tail = NULL;
         free(link);
-        return link->data;
+        return;
     }
     switch(pos) {
         case START:
@@ -54,7 +55,6 @@ void *delete_from_list(DList *list, Pos pos) {
             list->tail = link->prev;
     }
     free(link);
-    return link->data;
 }
 
 DList *create_dlist() {

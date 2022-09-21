@@ -11,9 +11,9 @@ add_executable(shake
         new_sn/direction.h
         new_sn/double_list.c
         new_sn/double_list.h
-        new_sn/new_snake.c
+        new_sn/main.c
         new_sn/snake.c
-        new_sn/snake.h
-        test/test.c)
+        new_sn/snake.h)
+        # test/test.c)
 
 target_link_libraries(shake ncursesw)
