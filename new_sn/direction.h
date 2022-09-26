@@ -18,4 +18,6 @@ Direction get_direction_by_two_points(Point *a, Point *b);
 
 void increment_points(Direction dir, int *x, int *y);
 
+const char* get_name_by_direction(const Direction dir);
+
 #endif

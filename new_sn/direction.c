@@ -1,4 +1,5 @@
 #include "direction.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -13,7 +14,7 @@ Direction get_collinear(Direction dir) {
         case LEFT:
             return RIGHT;
     }
-
+    exit(1);
 }
 
 Direction get_direction_by_two_points(struct Point *a, struct Point *b) {
@@ -50,6 +51,20 @@ void increment_points(Direction dir, int *x, int *y) {
             (*x)--;
             break;
     }
+}
+
+const char* get_name_by_direction(const Direction dir) {
+    switch (dir) {
+        case TOP:
+            return "TOP";
+        case BOTTOM:
+            return "BOTTOM";
+        case RIGHT:
+            return "RIGHT";
+        case LEFT:
+            return "LEFT";
+    }
+    exit(1);
 }
 
 

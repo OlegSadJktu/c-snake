@@ -7,7 +7,11 @@ typedef struct SimpleData {
 
 } SimpleData;
 
-int main(int argc, char **argv) {
+int main() {
+
+}
+
+int main2(int argc, char **argv) {
     DList *list = create_dlist();
     for (int i = 0; i < 10 ; i ++) {
         SimpleData *data = malloc(sizeof(SimpleData));
@@ -24,10 +28,19 @@ int main(int argc, char **argv) {
             continue;
         }
         sd = link->data;
-        printf("%i\n", sd->a);
+        printf("%i ", sd->a);
         link = link->prev;
     }
+    printf("\n\n");
+    for (int i = 0; i < 10; i++) {
+        sd = delete_from_list(list, START);
+        printf("%i ", sd->a);
+    }
 
+    printf("\n\n");
+    printf("%i, pointer => %p\n", list->head == list->tail, list->head);
+
+    return 0;
 
 
 }
