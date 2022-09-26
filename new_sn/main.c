@@ -7,7 +7,9 @@ typedef struct SimpleData {
 
 } SimpleData;
 
+
 int main() {
+    printf("%lu", sizeof(int));
 
 }
 
@@ -41,6 +43,5 @@ int main2(int argc, char **argv) {
     printf("%i, pointer => %p\n", list->head == list->tail, list->head);
 
     return 0;
-
 
 }

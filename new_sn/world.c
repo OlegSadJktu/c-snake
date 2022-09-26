@@ -1,5 +1,4 @@
 #include "world.h"
-#include <stdlib.h>
 
 World *create_world(int size) {
     World *world = malloc(sizeof(World));

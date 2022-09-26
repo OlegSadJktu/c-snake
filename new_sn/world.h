@@ -3,8 +3,9 @@
 
 #include "snake.h"
 #include "apple.h"
+#include <stdlib.h>
 
-typedef struct World {
+typedef struct {
     int size;
     Snake *snake;
     Apple *apple;
