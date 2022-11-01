@@ -1,5 +1,8 @@
 #include "double_list.h"
+#include "world.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <curses.h>
 
 
 typedef struct SimpleData {
@@ -8,8 +11,33 @@ typedef struct SimpleData {
 } SimpleData;
 
 
+void test(unsigned int a) {
+    printf("%u\n", a);
+}
+
 int main() {
-    printf("%lu", sizeof(int));
+    int a = 1 ;
+    test(a );
+    int maxy, maxx;
+    int x = 0;
+    initscr();
+    getmaxyx(stdscr, maxy, maxx);
+    curs_set(0);
+
+    int input;
+    DList *list = create_dlist();
+    Snake *snake = create_snake(5, 5, 3);
+    /* return 0; */
+
+    while ((input = getch()) != 'q') {
+        clear();
+        /* printf("%c", input); */
+        mvaddch(maxy / 2, x, 'o');
+        x++;
+    }
+    
+    endwin();
+
 
 }
 

@@ -3,6 +3,7 @@
 
 #include "direction.h"
 #include "double_list.h"
+#include <stdio.h>
 
 typedef struct SnakeCell {
     struct Point *pos;
